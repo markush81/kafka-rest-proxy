@@ -16,13 +16,38 @@
 
 package org.mh.kafka.rest.proxy;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.dropwizard.Application;
+import io.dropwizard.setup.Environment;
+import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
+import org.mh.kafka.rest.proxy.consumer.KafkaProxyConsumer;
+import org.mh.kafka.rest.proxy.health.KafkaRestProxyHealthCheck;
+import org.mh.kafka.rest.proxy.producer.KafkaProxyProducer;
+import org.mh.kafka.rest.proxy.resource.TopicResource;
+
 /**
  * Created by markus on 26/08/16.
  */
-public class KafkaRestProxy {
+public class KafkaRestProxy extends Application<KafkaRestProxyConfiguration> {
 
-    public static void main(String[] args) {
-        System.out.printf("Work has just started ... stay tuned!");
+    public static void main(String[] args) throws Exception {
+        new KafkaRestProxy().run(args);
     }
 
+    @Override
+    public String getName() {
+        return "kafka-rest-proxy";
+    }
+
+    @Override
+    public void run(KafkaRestProxyConfiguration configuration, Environment environment) throws Exception {
+        //configure pretty print
+        ObjectMapper objectMapper = environment.getObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        //add application healthcheck
+        environment.healthChecks().register("application", new KafkaRestProxyHealthCheck());
+        //register topic resource
+        environment.jersey().register(new TopicResource(new KafkaProxyProducer(configuration), new KafkaProxyConsumer(configuration)));
+    }
 }
