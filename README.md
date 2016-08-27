@@ -67,13 +67,13 @@ Configuration file can be found in `src/conf/` and is named `kafka-rest-proxy.ym
 ### POST to any topic
 
 ```
-curl -XPOST -H "Content-Type:application/json" -d "{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy proof of concept is out\"}" http://localhost:8080/topics/test
+curl -XPOST -H "Content-Type:application/json" -d "{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy proof of concept is on github.\"}" http://localhost:8080/topics/test
 ```
 
 ### GET status and other information
 
 ```
-curl http://localhost:8081/topics
+curl http://localhost:8080/topics
 ```
 
 ## Healthcheck
