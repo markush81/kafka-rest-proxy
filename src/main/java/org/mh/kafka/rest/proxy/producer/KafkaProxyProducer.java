@@ -16,10 +16,7 @@
 
 package org.mh.kafka.rest.proxy.producer;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
 import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
 
 import java.util.concurrent.Future;
@@ -37,6 +34,10 @@ public class KafkaProxyProducer {
 
     public Future<RecordMetadata> send(String topic, String value) {
         return producer.send(new ProducerRecord<>(topic, value));
+    }
+
+    public Future<RecordMetadata> send(String topic, String value, Callback callback) {
+        return producer.send(new ProducerRecord<>(topic, value), callback);
     }
 
     @Override

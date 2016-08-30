@@ -35,4 +35,5 @@ public class KafkaProxyConsumer {
     public Set<String> getTopics() {
         return consumer.listTopics().keySet();
     }
+
 }
