@@ -18,8 +18,6 @@ package org.mh.kafka.rest.proxy.resource;
 
 import com.google.common.collect.Sets;
 import io.dropwizard.testing.junit.ResourceTestRule;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.clients.producer.internals.FutureRecordMetadata;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -28,7 +26,6 @@ import org.mh.kafka.rest.proxy.producer.KafkaProxyProducer;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-
 import java.util.concurrent.Future;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,7 +46,7 @@ public class TopicResourceTest {
     public void setUp() {
         reset(KAFKA_PROXY_PRODUCER, KAFKA_PROXY_CONSUMER);
         //noinspection unchecked
-        when(KAFKA_PROXY_PRODUCER.send(any(),any())).thenReturn(mock(Future.class));
+        when(KAFKA_PROXY_PRODUCER.send(any(), any())).thenReturn(mock(Future.class));
     }
 
     @Test
@@ -89,7 +86,7 @@ public class TopicResourceTest {
                 .request()
                 .post(Entity.json("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}"))
                 .getStatus(), equalTo(201));
-        verify(KAFKA_PROXY_PRODUCER, times(1)).send("test", "{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}");
+        verify(KAFKA_PROXY_PRODUCER, times(1)).send(eq("test"), eq("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}"), any());
     }
 
     @Test

@@ -26,6 +26,9 @@ kafka:
     group.id: config
     enable.auto.commit: true
     auto.commit.interval.ms: 1000
-    session.timeout.ms: 30000
+    heartbeat.interval.ms: 1000
+    fetch.max.wait.ms: 2000
+    session.timeout.ms: 2000
+    request.timeout.ms: 3000
     key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value.deserializer: org.apache.kafka.common.serialization.StringDeserializer

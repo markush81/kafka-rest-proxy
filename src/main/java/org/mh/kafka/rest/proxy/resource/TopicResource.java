@@ -16,8 +16,10 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
+import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import io.dropwizard.jersey.errors.ErrorMessage;
 import org.mh.kafka.rest.proxy.consumer.KafkaProxyConsumer;
 import org.mh.kafka.rest.proxy.producer.KafkaProxyProducer;
 import org.slf4j.Logger;
@@ -26,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by markus on 27/08/16.
@@ -47,20 +51,16 @@ public class TopicResource {
     @POST
     @Path(value = "/{topic}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response postMessage(@PathParam(value = "topic") String topic, String value) {
+    public Response postMessage(@PathParam(value = "topic") String topic, String value) throws InterruptedException, ExecutionException, TimeoutException {
+        int badRequestStatusCode = Response.Status.BAD_REQUEST.getStatusCode();
         if (Strings.isNullOrEmpty(topic)) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Pls. specify a topic.").build();
+            return Response.status(badRequestStatusCode).entity(new ErrorMessage(badRequestStatusCode, "Pls. specify a topic.")).build();
         }
         if (Strings.isNullOrEmpty(value) || "{}".equals(value)) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("No payload specified.").build();
+            return Response.status(badRequestStatusCode).entity(new ErrorMessage(badRequestStatusCode, "No payload specified.")).build();
         }
         LOGGER.debug("{}: {}", topic, value);
-        try {
-            kafkaProxyProducer.send(topic, value);
-            LOGGER.debug("... sent.");
-        } catch (Throwable exception) {
-            LOGGER.error("{}", exception.getMessage(), exception);
-        }
+        kafkaProxyProducer.send(topic, value, (metadata, exception) -> LOGGER.error("{}", exception.getMessage(), exception));
         return Response.status(Response.Status.CREATED).build();
     }
 

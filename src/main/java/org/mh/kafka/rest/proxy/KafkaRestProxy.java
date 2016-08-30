@@ -22,7 +22,7 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
 import org.mh.kafka.rest.proxy.consumer.KafkaProxyConsumer;
-import org.mh.kafka.rest.proxy.health.KafkaRestProxyHealthCheck;
+import org.mh.kafka.rest.proxy.health.KafkaRestProxyKafkaHealthCheck;
 import org.mh.kafka.rest.proxy.producer.KafkaProxyProducer;
 import org.mh.kafka.rest.proxy.resource.TopicResource;
 
@@ -46,7 +46,7 @@ public class KafkaRestProxy extends Application<KafkaRestProxyConfiguration> {
         ObjectMapper objectMapper = environment.getObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         //add application healthcheck
-        environment.healthChecks().register("application", new KafkaRestProxyHealthCheck());
+        environment.healthChecks().register("application", new KafkaRestProxyKafkaHealthCheck(new KafkaProxyConsumer(configuration)));
         //register topic resource
         environment.jersey().register(new TopicResource(new KafkaProxyProducer(configuration), new KafkaProxyConsumer(configuration)));
     }
