@@ -4,7 +4,7 @@ Get your data via REST into Apache Kafka
 # WARNING - Proof of Concept
 
 ```
-I just started, so it is far away from being complete ... and has to be considered as proof of concept
+This is currently in a proof of concept stage! Pls. be aware when using it.
 ```
 
 ## Idea
@@ -70,16 +70,22 @@ Configuration file can be found in `src/conf/` and is named `kafka-rest-proxy.ym
 curl -XPOST -H "Content-Type:application/json" -d "{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy proof of concept is on github.\"}" http://localhost:8080/topics/test
 ```
 
-### GET status and other information
+### GET to any topic
 
 ```
-curl http://localhost:8080/topics
+curl -XGET http://localhost:8080/topics/test
+```
+
+### GET available topics
+
+```
+curl -XGET http://localhost:8080/topics
 ```
 
 ## Healthcheck
 
 ```
-curl http://localhost:8081/healthcheck
+curl -XGET http://localhost:8081/healthcheck
 ```
 
 -

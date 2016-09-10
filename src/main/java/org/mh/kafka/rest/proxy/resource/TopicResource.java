@@ -16,7 +16,6 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
-import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import io.dropwizard.jersey.errors.ErrorMessage;
@@ -60,8 +59,25 @@ public class TopicResource {
             return Response.status(badRequestStatusCode).entity(new ErrorMessage(badRequestStatusCode, "No payload specified.")).build();
         }
         LOGGER.debug("{}: {}", topic, value);
-        kafkaProxyProducer.send(topic, value, (metadata, exception) -> LOGGER.error("{}", exception.getMessage(), exception));
+        kafkaProxyProducer.send(topic, value, (metadata, exception) -> {
+            if (metadata != null) {
+                LOGGER.debug("RecordMetadata: {}", metadata);
+            }
+            if (exception != null) {
+                LOGGER.error("{}", exception.getMessage(), exception);
+            }
+        });
         return Response.status(Response.Status.CREATED).build();
+    }
+
+    @GET
+    @Path(value = "/{topic}")
+    public Response getMessages(@PathParam(value = "topic") String topic) throws InterruptedException, ExecutionException, TimeoutException {
+        int badRequestStatusCode = Response.Status.BAD_REQUEST.getStatusCode();
+        if (Strings.isNullOrEmpty(topic)) {
+            return Response.status(badRequestStatusCode).entity(new ErrorMessage(badRequestStatusCode, "Pls. specify a topic.")).build();
+        }
+        return Response.status(Response.Status.OK).entity(kafkaProxyConsumer.poll(topic)).build();
     }
 
     @GET

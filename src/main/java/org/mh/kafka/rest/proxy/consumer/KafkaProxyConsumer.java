@@ -16,6 +16,8 @@
 
 package org.mh.kafka.rest.proxy.consumer;
 
+import com.google.common.collect.Lists;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
 
@@ -30,6 +32,16 @@ public class KafkaProxyConsumer {
 
     public KafkaProxyConsumer(KafkaRestProxyConfiguration configuration) {
         consumer = new KafkaConsumer<>(configuration.getKafka().get("consumer"));
+    }
+
+    public ConsumerRecords<String, String> poll(String topic) {
+        consumer.subscribe(Lists.newArrayList(topic));
+        try {
+            return consumer.poll(5000L);
+        } finally {
+            consumer.commitSync();
+            consumer.unsubscribe();
+        }
     }
 
     public Set<String> getTopics() {
