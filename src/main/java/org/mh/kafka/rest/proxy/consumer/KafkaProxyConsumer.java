@@ -20,18 +20,20 @@ import com.google.common.collect.Lists;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 /**
  * Created by markus on 27/08/16.
  */
+@Component
 public class KafkaProxyConsumer {
 
     private KafkaConsumer<String, String> consumer;
 
     public KafkaProxyConsumer(KafkaRestProxyConfiguration configuration) {
-        consumer = new KafkaConsumer<>(configuration.getKafka().get("consumer"));
+        consumer = new KafkaConsumer<>(configuration.getConsumer());
     }
 
     public ConsumerRecords<String, String> poll(String topic) {

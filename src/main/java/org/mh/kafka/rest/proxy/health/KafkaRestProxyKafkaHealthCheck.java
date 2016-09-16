@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by markus on 27/08/16.
  */
-public class KafkaRestProxyKafkaHealthCheck extends com.codahale.metrics.health.HealthCheck {
+public class KafkaRestProxyKafkaHealthCheck {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaRestProxyKafkaHealthCheck.class);
 
@@ -34,14 +34,13 @@ public class KafkaRestProxyKafkaHealthCheck extends com.codahale.metrics.health.
         this.kafkaProxyConsumer = kafkaHealthConsumer;
     }
 
-    @Override
-    protected Result check() throws Exception {
-        try {
-            kafkaProxyConsumer.getTopics();
-            return Result.healthy("Kafka topics are available.");
-        } catch (Exception exception) {
-            LOGGER.error("{}",exception.getMessage(),exception);
-            return Result.unhealthy(exception);
-        }
-    }
+//    protected Result check() throws Exception {
+//        try {
+//            kafkaProxyConsumer.getTopics();
+//            return Result.healthy("Kafka topics are available.");
+//        } catch (Exception exception) {
+//            LOGGER.error("{}",exception.getMessage(),exception);
+//            return Result.unhealthy(exception);
+//        }
+//    }
 }

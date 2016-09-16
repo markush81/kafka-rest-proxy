@@ -16,18 +16,35 @@
 
 package org.mh.kafka.rest.proxy.config;
 
-import io.dropwizard.Configuration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
  * Created by markus on 27/08/16.
  */
-public class KafkaRestProxyConfiguration extends Configuration {
+@Configuration
+@ConfigurationProperties(prefix = "kafka")
+public class KafkaRestProxyConfiguration {
 
-    private Map<String, Map<String, Object>> kafka;
+    private Map<String, Object> producer;
+    private Map<String, Object> consumer;
 
-    public Map<String, Map<String, Object>> getKafka() {
-        return kafka;
+    public Map<String, Object> getProducer() {
+        return producer;
+    }
+
+    public void setProducer(Map<String, Object> producer) {
+        this.producer = producer;
+    }
+
+    public Map<String, Object> getConsumer() {
+        return consumer;
+    }
+
+    public void setConsumer(Map<String, Object> consumer) {
+        this.consumer = consumer;
     }
 }

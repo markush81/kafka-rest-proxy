@@ -18,18 +18,20 @@ package org.mh.kafka.rest.proxy.producer;
 
 import org.apache.kafka.clients.producer.*;
 import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Future;
 
 /**
  * Created by markus on 27/08/16.
  */
+@Component
 public class KafkaProxyProducer {
 
     private Producer<String, String> producer;
 
     public KafkaProxyProducer(KafkaRestProxyConfiguration configuration) {
-        producer = new KafkaProducer<>(configuration.getKafka().get("producer"));
+        producer = new KafkaProducer<>(configuration.getProducer());
     }
 
     public Future<RecordMetadata> send(String topic, String value) {
