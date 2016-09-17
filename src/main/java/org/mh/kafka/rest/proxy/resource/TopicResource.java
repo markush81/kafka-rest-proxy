@@ -22,18 +22,20 @@ import org.mh.kafka.rest.proxy.consumer.KafkaProxyConsumer;
 import org.mh.kafka.rest.proxy.producer.KafkaProxyProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Created by markus on 27/08/16.
  */
-@RestController("/topics")
-@RequestMapping(path = "/service")
+@RestController
+@RequestMapping(path = "/topics")
 public class TopicResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopicResource.class);
@@ -47,10 +49,7 @@ public class TopicResource {
     }
 
     @PostMapping(path = "/{topic}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity postMessage(@RequestParam(value = "topic") String topic, String value) throws InterruptedException, ExecutionException, TimeoutException {
-        if (Strings.isNullOrEmpty(topic)) {
-            return ResponseEntity.badRequest().body("Pls. specify a topic.");
-        }
+    public ResponseEntity postMessage(@PathVariable(value = "topic") String topic, @RequestBody String value) throws InterruptedException, ExecutionException, TimeoutException {
         if (Strings.isNullOrEmpty(value) || "{}".equals(value)) {
             return ResponseEntity.badRequest().body("No payload specified.");
         }
@@ -63,19 +62,21 @@ public class TopicResource {
                 LOGGER.error("{}", exception.getMessage(), exception);
             }
         });
-        return ResponseEntity.created(null).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping(path = "/{topic}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> getMessages(@RequestParam(value = "topic") String topic) throws InterruptedException, ExecutionException, TimeoutException {
-        if (Strings.isNullOrEmpty(topic)) {
-            return ResponseEntity.badRequest().body("Pls. specify a topic.");
-        }
+    public ResponseEntity<?> get(@PathVariable(value = "topic") String topic) throws InterruptedException, ExecutionException, TimeoutException {
         return ResponseEntity.ok(kafkaProxyConsumer.poll(topic));
     }
 
-    @GetMapping
-    public ResponseEntity getTopics() {
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @GetMapping(path = {"/info", "/{topic}/info"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> get(@PathVariable(value = "topic") Optional<String> topic) throws InterruptedException, ExecutionException, TimeoutException {
+        if (topic.isPresent()) {
+            return ResponseEntity.ok(kafkaProxyConsumer.getTopicInfo(topic.get()));
+        }
         return ResponseEntity.ok(Lists.newArrayList(kafkaProxyConsumer.getTopics()));
     }
 }

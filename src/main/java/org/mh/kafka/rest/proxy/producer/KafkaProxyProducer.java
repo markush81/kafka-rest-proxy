@@ -31,7 +31,7 @@ public class KafkaProxyProducer {
     private Producer<String, String> producer;
 
     public KafkaProxyProducer(KafkaRestProxyConfiguration configuration) {
-        producer = new KafkaProducer<>(configuration.getProducer());
+        producer = new KafkaProducer<>(configuration.getProducerProperties());
     }
 
     public Future<RecordMetadata> send(String topic, String value) {

@@ -6,13 +6,15 @@ kafka:
     batch.size: 16384
     linger.ms: 1
     buffer.memory: 33554432
-    key.serializer: org.apache.producer.common.serialization.StringSerializer
-    value.serializer: org.apache.producer.common.serialization.StringSerializer
+    key.serializer: org.apache.kafka.common.serialization.StringSerializer
+    value.serializer: org.apache.kafka.common.serialization.StringSerializer
 
   consumer:
     bootstrap.servers: localhost:9092
     group.id: config
     enable.auto.commit: false
     heartbeat.interval.ms: 1000
-    key.deserializer: org.apache.producer.common.serialization.StringDeserializer
-    value.deserializer: org.apache.producer.common.serialization.StringDeserializer
+    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+spring.jackson.serialization.fail_on_empty_beans: false

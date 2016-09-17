@@ -20,13 +20,13 @@
         </encoder>
     </appender>
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/producer-rest-proxy.log</file>
+        <file>logs/kafka-rest-proxy.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <logger name="sample" level="DEBUG" additivity="false">
+    <logger name="org.mh.kafka.rest.proxy" level="DEBUG" additivity="false">
         <appender-ref ref="FILE"/>
     </logger>
 

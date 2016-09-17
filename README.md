@@ -24,29 +24,29 @@ Often in your environment you might not be allowed to directly access your produ
 	or if installed via brew
 	
 	```
-	zookeeper-server-start /usr/local/etc/producer/zookeeper.properties
-	producer-server-start /usr/local/etc/producer/server.properties
+	zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties
+	kafka-server-start /usr/local/etc/kafka/server.properties
 	```
 	
 3. Create a producer topic
 
    Homebrew:
    ```
-   producer-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
+   kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
    ```
 
 4. Check if topic is there
 
    Homebrew:
    ```
-   producer-topics --list --zookeeper localhost:2181
+   kafka-topics --list --zookeeper localhost:2181
    ```
 
 5. Start a console conusmer to check your posted messsages
 
    Homebrew:
    ```
-   producer-console-consumer --topic test --zookeeper localhost:2181
+   kafka-console-consumer --topic test --zookeeper localhost:2181
    ```
 
 ## Usage of producer-rest-proxy
@@ -60,7 +60,7 @@ Often in your environment you might not be allowed to directly access your produ
 Configuration file can be found in `src/main/resources` and is named `application.yml`.
 
 - Put all Apache Kafka properties beneath node `producer` (see [Configuration](http://producer.apache.org/documentation.html#configuration))
-- For configuration of [Dropwizard](http://www.dropwizard.io) see [Configuration](http://www.dropwizard.io/1.0.0/docs/manual/core.html#configuration)
+- For configuration of [Spring Boot](http://docs.spring.io/spring-boot/docs/current/reference/html/) see [Configuration](http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html)
 
 ## REST API
 
@@ -70,22 +70,16 @@ Configuration file can be found in `src/main/resources` and is named `applicatio
 curl -XPOST -H "Content-Type:application/json" -d "{\"name\":\"Markus Helbig\", \"message\": \"producer-rest-proxy proof of concept is on github.\"}" http://localhost:8080/topics/test
 ```
 
-### GET to any topic
-
-```
-curl -XGET http://localhost:8080/topics/test
-```
-
 ### GET available topics
 
 ```
-curl -XGET http://localhost:8080/topics
+curl -XGET http://localhost:8080/topics/info
 ```
 
 ## Healthcheck
 
 ```
-curl -XGET http://localhost:8081/healthcheck
+curl -XGET http://localhost:8080/health
 ```
 
 -
