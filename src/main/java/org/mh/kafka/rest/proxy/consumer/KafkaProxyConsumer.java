@@ -19,19 +19,27 @@ package org.mh.kafka.rest.proxy.consumer;
 import com.google.common.collect.Lists;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.PartitionInfo;
 import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
+
+import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_SINGLETON;
 
 /**
  * Created by markus on 27/08/16.
  */
+@Scope(SCOPE_SINGLETON)
+@Component
 public class KafkaProxyConsumer {
 
     private KafkaConsumer<String, String> consumer;
 
     public KafkaProxyConsumer(KafkaRestProxyConfiguration configuration) {
-        consumer = new KafkaConsumer<>(configuration.getKafka().get("consumer"));
+        consumer = new KafkaConsumer<>(configuration.getConsumerProperties());
     }
 
     public ConsumerRecords<String, String> poll(String topic) {
@@ -42,6 +50,10 @@ public class KafkaProxyConsumer {
             consumer.commitSync();
             consumer.unsubscribe();
         }
+    }
+
+    public List<PartitionInfo> getTopicInfo(String topic) {
+        return consumer.listTopics().get(topic);
     }
 
     public Set<String> getTopics() {

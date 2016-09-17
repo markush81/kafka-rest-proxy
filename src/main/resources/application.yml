@@ -1,15 +1,3 @@
-logging:
-  level: ERROR
-
-  loggers:
-    org.mh.kafka.rest.proxy: DEBUG
-    org.apache.kafka: INFO
-
-  appenders:
-    - type: console
-      threshold: DEBUG
-      target: stderr
-
 kafka:
   producer:
     bootstrap.servers: localhost:9092
@@ -24,11 +12,9 @@ kafka:
   consumer:
     bootstrap.servers: localhost:9092
     group.id: config
-    enable.auto.commit: true
-    auto.commit.interval.ms: 1000
+    enable.auto.commit: false
     heartbeat.interval.ms: 1000
-    fetch.max.wait.ms: 2000
-    session.timeout.ms: 2000
-    request.timeout.ms: 3000
     key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+spring.jackson.serialization.fail_on_empty_beans: false

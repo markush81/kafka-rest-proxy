@@ -18,23 +18,24 @@ package org.mh.kafka.rest.proxy.resource;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import io.dropwizard.jersey.errors.ErrorMessage;
 import org.mh.kafka.rest.proxy.consumer.KafkaProxyConsumer;
 import org.mh.kafka.rest.proxy.producer.KafkaProxyProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Created by markus on 27/08/16.
  */
-@Path("/topics")
-@Produces(MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping(path = "/topics")
 public class TopicResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopicResource.class);
@@ -47,16 +48,10 @@ public class TopicResource {
         this.kafkaProxyConsumer = kafkaProxyConsumer;
     }
 
-    @POST
-    @Path(value = "/{topic}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response postMessage(@PathParam(value = "topic") String topic, String value) throws InterruptedException, ExecutionException, TimeoutException {
-        int badRequestStatusCode = Response.Status.BAD_REQUEST.getStatusCode();
-        if (Strings.isNullOrEmpty(topic)) {
-            return Response.status(badRequestStatusCode).entity(new ErrorMessage(badRequestStatusCode, "Pls. specify a topic.")).build();
-        }
+    @PostMapping(path = "/{topic}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity postMessage(@PathVariable(value = "topic") String topic, @RequestBody String value) throws InterruptedException, ExecutionException, TimeoutException {
         if (Strings.isNullOrEmpty(value) || "{}".equals(value)) {
-            return Response.status(badRequestStatusCode).entity(new ErrorMessage(badRequestStatusCode, "No payload specified.")).build();
+            return ResponseEntity.badRequest().body("No payload specified.");
         }
         LOGGER.debug("{}: {}", topic, value);
         kafkaProxyProducer.send(topic, value, (metadata, exception) -> {
@@ -67,21 +62,21 @@ public class TopicResource {
                 LOGGER.error("{}", exception.getMessage(), exception);
             }
         });
-        return Response.status(Response.Status.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GET
-    @Path(value = "/{topic}")
-    public Response getMessages(@PathParam(value = "topic") String topic) throws InterruptedException, ExecutionException, TimeoutException {
-        int badRequestStatusCode = Response.Status.BAD_REQUEST.getStatusCode();
-        if (Strings.isNullOrEmpty(topic)) {
-            return Response.status(badRequestStatusCode).entity(new ErrorMessage(badRequestStatusCode, "Pls. specify a topic.")).build();
+    @GetMapping(path = "/{topic}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> get(@PathVariable(value = "topic") String topic) throws InterruptedException, ExecutionException, TimeoutException {
+        return ResponseEntity.ok(kafkaProxyConsumer.poll(topic));
+    }
+
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @GetMapping(path = {"/info", "/{topic}/info"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> get(@PathVariable(value = "topic") Optional<String> topic) throws InterruptedException, ExecutionException, TimeoutException {
+        if (topic.isPresent()) {
+            return ResponseEntity.ok(kafkaProxyConsumer.getTopicInfo(topic.get()));
         }
-        return Response.status(Response.Status.OK).entity(kafkaProxyConsumer.poll(topic)).build();
-    }
-
-    @GET
-    public Response getTopics() {
-        return Response.ok().entity(Lists.newArrayList(kafkaProxyConsumer.getTopics())).build();
+        return ResponseEntity.ok(Lists.newArrayList(kafkaProxyConsumer.getTopics()));
     }
 }

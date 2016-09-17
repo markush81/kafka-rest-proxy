@@ -16,18 +16,62 @@
 
 package org.mh.kafka.rest.proxy.config;
 
-import io.dropwizard.Configuration;
+import com.google.common.collect.Maps;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 
 /**
  * Created by markus on 27/08/16.
  */
-public class KafkaRestProxyConfiguration extends Configuration {
+@Configuration
+@ConfigurationProperties(prefix = "kafka")
+public class KafkaRestProxyConfiguration {
 
-    private Map<String, Map<String, Object>> kafka;
+    private Map<String, Object> producer;
+    private Map<String, Object> consumer;
 
-    public Map<String, Map<String, Object>> getKafka() {
-        return kafka;
+
+    @SuppressWarnings("unused")
+    public Map<String, Object> getProducer() {
+        return producer;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public void setProducer(Map<String, Object> producer) {
+        this.producer = producer;
+    }
+
+    @SuppressWarnings("unused")
+    public Map<String, Object> getConsumer() {
+        return consumer;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public void setConsumer(Map<String, Object> consumer) {
+        this.consumer = consumer;
+    }
+
+    public Map<String, Object> getProducerProperties() {
+        return flatProperties(producer, Maps.newHashMap(), null);
+    }
+
+    public Map<String, Object> getConsumerProperties() {
+        return flatProperties(consumer, Maps.newHashMap(), null);
+    }
+
+    private Map<String, Object> flatProperties(Map<String, Object> input, Map<String, Object> result, String current) {
+        for (Map.Entry<String, Object> entry : input.entrySet()) {
+            if (entry.getValue() instanceof Map) {
+                //noinspection unchecked
+                flatProperties((Map<String, Object>) entry.getValue(), result, entry.getKey());
+            } else if (current == null) {
+                result.put(entry.getKey(), entry.getValue());
+            } else {
+                result.put(current + "." + entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
     }
 }

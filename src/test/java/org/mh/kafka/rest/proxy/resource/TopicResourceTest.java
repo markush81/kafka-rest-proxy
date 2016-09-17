@@ -16,96 +16,155 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.dropwizard.testing.junit.ResourceTestRule;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.Node;
+import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.TopicPartition;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mh.kafka.rest.proxy.consumer.KafkaProxyConsumer;
 import org.mh.kafka.rest.proxy.producer.KafkaProxyProducer;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import java.util.concurrent.Future;
+import java.util.HashMap;
+import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by markus on 27/08/16.
  */
+@RunWith(SpringRunner.class)
+@WebMvcTest
 public class TopicResourceTest {
 
-    private static final KafkaProxyProducer KAFKA_PROXY_PRODUCER = mock(KafkaProxyProducer.class);
-    private static final KafkaProxyConsumer KAFKA_PROXY_CONSUMER = mock(KafkaProxyConsumer.class);
-    @ClassRule
-    public static final ResourceTestRule resources = ResourceTestRule.builder().addResource(new TopicResource(KAFKA_PROXY_PRODUCER, KAFKA_PROXY_CONSUMER)).build();
+    @Autowired
+    private MockMvc mvc;
 
-    @Before
-    public void setUp() {
-        reset(KAFKA_PROXY_PRODUCER, KAFKA_PROXY_CONSUMER);
-        //noinspection unchecked
-        when(KAFKA_PROXY_PRODUCER.send(any(), any())).thenReturn(mock(Future.class));
+    @MockBean
+    private KafkaProxyConsumer kafkaProxyConsumer;
+    @MockBean
+    private KafkaProxyProducer kafkaProxyProducer;
+
+    @Test
+    public void testPostEmptyBody() throws Exception {
+        mvc.perform(post("/topics/test").contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest());
+        verify(kafkaProxyProducer, times(0)).send(any(), any());
     }
 
     @Test
-    public void testPostEmptyBody() {
-        assertThat(resources.client()
-                .target("/topics/test")
-                .request()
-                .post(null)
-                .getStatus(), equalTo(400));
-        verify(KAFKA_PROXY_PRODUCER, times(0)).send(any(), any());
+    public void testPostNoMediaType() throws Exception {
+        mvc.perform(post("/topics"))
+                .andExpect(status().isNotFound());
+        verify(kafkaProxyProducer, times(0)).send(any(), any());
     }
 
     @Test
-    public void testPostEmptyTopic() {
-        assertThat(resources.client()
-                .target("/topics")
-                .request()
-                .post(null)
-                .getStatus(), equalTo(405));
-        verify(KAFKA_PROXY_PRODUCER, times(0)).send(any(), any());
+    public void testPostEmptyTopic() throws Exception {
+        mvc.perform(post("/topics").contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound());
+        verify(kafkaProxyProducer, times(0)).send(any(), any());
     }
 
     @Test
-    public void testPostEmptyJson() {
-        assertThat(resources.client()
-                .target("/topics/test")
-                .request()
-                .post(Entity.entity("{}", MediaType.APPLICATION_JSON_TYPE))
-                .getStatus(), equalTo(400));
-        verify(KAFKA_PROXY_PRODUCER, times(0)).send(any(), any());
+    public void testPostEmptyJson() throws Exception {
+        mvc.perform(post("/topics/test").contentType(MediaType.APPLICATION_JSON_UTF8).content("{}"))
+                .andExpect(status().isBadRequest());
+        verify(kafkaProxyProducer, times(0)).send(any(), any());
     }
 
     @Test
-    public void testPost() {
-        assertThat(resources.client()
-                .target("/topics/test")
-                .request()
-                .post(Entity.json("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}"))
-                .getStatus(), equalTo(201));
-        verify(KAFKA_PROXY_PRODUCER, times(1)).send(eq("test"), eq("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}"), any());
+    public void testPostEmptyJsonNoMediaTypeSet() throws Exception {
+        mvc.perform(post("/topics/test").content("{}"))
+                .andExpect(status().isUnsupportedMediaType());
+        verify(kafkaProxyProducer, times(0)).send(any(), any());
     }
 
     @Test
-    public void testGetTopicsEmpty() {
-        assertThat(resources.client()
-                .target("/topics")
-                .request()
-                .get()
-                .getStatus(), equalTo(200));
+    public void testPost() throws Exception {
+        mvc.perform(post("/topics/test").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}"))
+                .andExpect(status().isCreated());
+        verify(kafkaProxyProducer, times(1)).send(eq("test"), eq("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}"), any());
     }
 
     @Test
-    public void testGetTopics() {
-        when(KAFKA_PROXY_CONSUMER.getTopics()).thenReturn(Sets.newHashSet("test"));
-        assertThat(resources.client()
-                .target("/topics")
-                .request()
-                .get()
-                .readEntity(String.class), equalTo("[\"test\"]"));
+    public void testGetTopic() throws Exception {
+        when(kafkaProxyConsumer.poll("test")).thenAnswer(new Answer<ConsumerRecords<String, String>>() {
+            @Override
+            public ConsumerRecords<String, String> answer(InvocationOnMock invocation) throws Throwable {
+                HashMap<TopicPartition, List<ConsumerRecord<String, String>>> topicPartitionListHashMap = Maps.newHashMap();
+                return new ConsumerRecords<>(topicPartitionListHashMap);
+            }
+        });
+        mvc.perform(get("/topics/test"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
+    }
+
+    @Test
+    public void testGetTopicNotFound() throws Exception {
+        mvc.perform(get("/topics"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGetTopicsInfoEmpty() throws Exception {
+        mvc.perform(get("/topics/info"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @Test
+    public void testGetTopicsInfo() throws Exception {
+        when(kafkaProxyConsumer.getTopics()).thenReturn(Sets.newHashSet("test"));
+        mvc.perform(get("/topics/info"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[\"test\"]"));
+    }
+
+    @Test
+    public void testGetTopicInfo() throws Exception {
+        when(kafkaProxyConsumer.getTopicInfo("test")).thenAnswer(new Answer<List<PartitionInfo>>() {
+            @Override
+            public List<PartitionInfo> answer(InvocationOnMock invocation) throws Throwable {
+                return Lists.newArrayList(new PartitionInfo("test", 1, new Node(1, "localhost", 1), new Node[]{}, new Node[]{}));
+            }
+        });
+        mvc.perform(get("/topics/test/info"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{}]"));
+    }
+
+
+    @Test
+    public void testGetTopicFullInfo() throws Exception {
+        when(kafkaProxyConsumer.getTopicInfo("test")).thenAnswer(new Answer<List<PartitionInfo>>() {
+            @Override
+            public List<PartitionInfo> answer(InvocationOnMock invocation) throws Throwable {
+                return Lists.newArrayList(new PartitionInfo("test", 1, new Node(1, "localhost", 1), new Node[]{new Node(1, "localhost", 1)}, new Node[]{new Node(1, "localhost", 1)}));
+            }
+        });
+        mvc.perform(get("/topics/test/info"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{}]"));
     }
 
 }
