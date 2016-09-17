@@ -84,4 +84,4 @@ curl -XGET http://localhost:8080/health
 
 -
 
-\* Note: producer-0.10.0.1, spring-boot-1.4.0, java-1.8.0_102, Homebrew-0.9.9
+\* Note: kakfa-clients-0.10.0.1, spring-boot-1.4.0, java-1.8.0_102, Homebrew-0.9.9

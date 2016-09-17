@@ -16,11 +16,8 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -37,13 +34,9 @@ import static org.hamcrest.core.IsEqual.equalTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TopicResourceIntegrationTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TopicResourceIntegrationTest.class);
-
     @Autowired
     private TestRestTemplate client;
 
-
-    @Ignore
     @Test
     public void testPostJson() throws InterruptedException {
         String message = String.format("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out (%s).\"}", System.currentTimeMillis());
