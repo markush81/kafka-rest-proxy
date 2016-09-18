@@ -16,35 +16,38 @@
 
 package org.mh.kafka.rest.proxy.producer;
 
-import org.apache.kafka.clients.producer.*;
-import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
-import org.springframework.stereotype.Component;
+import org.mh.kafka.rest.proxy.config.KafkaConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 
-import java.util.concurrent.Future;
+import java.util.Map;
 
 /**
  * Created by markus on 27/08/16.
  */
-@Component
+@Configuration
 public class KafkaProxyProducer {
 
-    private Producer<String, String> producer;
+    @Autowired
+    private KafkaConfiguration configuration;
 
-    public KafkaProxyProducer(KafkaRestProxyConfiguration configuration) {
-        producer = new KafkaProducer<>(configuration.getProducerProperties());
+    @Bean
+    protected ProducerFactory<String, String> producerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
-    public Future<RecordMetadata> send(String topic, String value) {
-        return producer.send(new ProducerRecord<>(topic, value));
+    @Bean
+    protected Map<String, Object> producerConfigs() {
+        return configuration.getProducerProperties();
     }
 
-    public Future<RecordMetadata> send(String topic, String value, Callback callback) {
-        return producer.send(new ProducerRecord<>(topic, value), callback);
+    @Bean
+    public KafkaTemplate<String, String> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        producer.close();
-        super.finalize();
-    }
 }

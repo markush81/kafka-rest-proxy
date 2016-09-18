@@ -27,11 +27,9 @@ import java.util.Map;
  */
 @Configuration
 @ConfigurationProperties(prefix = "kafka")
-public class KafkaRestProxyConfiguration {
+public class KafkaConfiguration {
 
     private Map<String, Object> producer;
-    private Map<String, Object> consumer;
-
 
     @SuppressWarnings("unused")
     public Map<String, Object> getProducer() {
@@ -43,22 +41,8 @@ public class KafkaRestProxyConfiguration {
         this.producer = producer;
     }
 
-    @SuppressWarnings("unused")
-    public Map<String, Object> getConsumer() {
-        return consumer;
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public void setConsumer(Map<String, Object> consumer) {
-        this.consumer = consumer;
-    }
-
     public Map<String, Object> getProducerProperties() {
         return flatProperties(producer, Maps.newHashMap(), null);
-    }
-
-    public Map<String, Object> getConsumerProperties() {
-        return flatProperties(consumer, Maps.newHashMap(), null);
     }
 
     private Map<String, Object> flatProperties(Map<String, Object> input, Map<String, Object> result, String current) {

@@ -2,19 +2,11 @@ kafka:
   producer:
     bootstrap.servers: localhost:9092
     acks: all
-    retries: 0
-    batch.size: 16384
-    linger.ms: 1
-    buffer.memory: 33554432
     key.serializer: org.apache.kafka.common.serialization.StringSerializer
     value.serializer: org.apache.kafka.common.serialization.StringSerializer
 
-  consumer:
-    bootstrap.servers: localhost:9092
-    group.id: config
-    enable.auto.commit: false
-    heartbeat.interval.ms: 1000
-    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
 spring.jackson.serialization.fail_on_empty_beans: false
+
+server:
+  session.timeout: 60
+  connection-timeout: 2000

@@ -17,14 +17,16 @@
 package org.mh.kafka.rest.proxy.resource;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import org.mh.kafka.rest.proxy.consumer.KafkaProxyConsumer;
-import org.mh.kafka.rest.proxy.producer.KafkaProxyProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -40,13 +42,8 @@ public class TopicResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopicResource.class);
 
-    private KafkaProxyProducer kafkaProxyProducer;
-    private KafkaProxyConsumer kafkaProxyConsumer;
-
-    public TopicResource(KafkaProxyProducer kafkaProxyProducer, KafkaProxyConsumer kafkaProxyConsumer) {
-        this.kafkaProxyProducer = kafkaProxyProducer;
-        this.kafkaProxyConsumer = kafkaProxyConsumer;
-    }
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @PostMapping(path = "/{topic}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity postMessage(@PathVariable(value = "topic") String topic, @RequestBody String value) throws InterruptedException, ExecutionException, TimeoutException {
@@ -54,29 +51,29 @@ public class TopicResource {
             return ResponseEntity.badRequest().body("No payload specified.");
         }
         LOGGER.debug("{}: {}", topic, value);
-        kafkaProxyProducer.send(topic, value, (metadata, exception) -> {
-            if (metadata != null) {
-                LOGGER.debug("RecordMetadata: {}", metadata);
-            }
-            if (exception != null) {
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, value);
+        future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+            @Override
+            public void onFailure(Throwable exception) {
                 LOGGER.error("{}", exception.getMessage(), exception);
+            }
+
+            @Override
+            public void onSuccess(SendResult<String, String> result) {
+                LOGGER.debug("RecordMetadata: {}", result.getRecordMetadata());
             }
         });
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping(path = "/{topic}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> get(@PathVariable(value = "topic") String topic) throws InterruptedException, ExecutionException, TimeoutException {
-        return ResponseEntity.ok(kafkaProxyConsumer.poll(topic));
-    }
-
-
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @GetMapping(path = {"/info", "/{topic}/info"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> get(@PathVariable(value = "topic") Optional<String> topic) throws InterruptedException, ExecutionException, TimeoutException {
         if (topic.isPresent()) {
-            return ResponseEntity.ok(kafkaProxyConsumer.getTopicInfo(topic.get()));
+            //FIXME: PartitionInfo is not serializable in some way ... ?!
+            return ResponseEntity.ok(kafkaTemplate.partitionsFor(topic.get()));
         }
-        return ResponseEntity.ok(Lists.newArrayList(kafkaProxyConsumer.getTopics()));
+//        return ResponseEntity.ok(Lists.newArrayList(kafkaProxyConsumer.getTopics()));
+        return ResponseEntity.ok(null);
     }
 }
