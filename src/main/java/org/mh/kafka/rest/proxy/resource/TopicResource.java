@@ -75,7 +75,7 @@ public class TopicResource {
     @GetMapping(path = {"/info", "/{topic}/info"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> get(@PathVariable(value = "topic") Optional<String> topic) throws InterruptedException, ExecutionException, TimeoutException {
         if (topic.isPresent()) {
-            return ResponseEntity.ok(kafkaProxyConsumer.getTopicInfo(topic.get()));
+            return ResponseEntity.ok(kafkaProxyProducer.getTopicInfo(topic.get()));
         }
         return ResponseEntity.ok(Lists.newArrayList(kafkaProxyConsumer.getTopics()));
     }

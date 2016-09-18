@@ -16,10 +16,15 @@
 
 package org.mh.kafka.rest.proxy.producer;
 
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.PartitionInfo;
 import org.mh.kafka.rest.proxy.config.KafkaRestProxyConfiguration;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -28,7 +33,7 @@ import java.util.concurrent.Future;
 @Component
 public class KafkaProxyProducer {
 
-    private Producer<String, String> producer;
+    private KafkaProducer<String, String> producer;
 
     public KafkaProxyProducer(KafkaRestProxyConfiguration configuration) {
         producer = new KafkaProducer<>(configuration.getProducerProperties());
@@ -46,5 +51,9 @@ public class KafkaProxyProducer {
     protected void finalize() throws Throwable {
         producer.close();
         super.finalize();
+    }
+
+    public List<PartitionInfo> getTopicInfo(String topic) {
+        return producer.partitionsFor(topic);
     }
 }

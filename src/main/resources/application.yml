@@ -18,3 +18,7 @@ kafka:
     value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 spring.jackson.serialization.fail_on_empty_beans: false
+
+server:
+  session.timeout: 60
+  connection-timeout: 2000
