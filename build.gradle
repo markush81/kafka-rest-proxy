@@ -30,6 +30,9 @@ apply plugin: 'spring-boot'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
 }
 
 // === JAVA configuration ===
@@ -98,14 +101,14 @@ artifacts {
 
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
-    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile 'org.springframework.kafka:spring-kafka:1.1.0.M2'
     compile 'com.google.guava:guava:19.0'
-    compile 'org.apache.kafka:kafka-clients:0.10.0.1'
 
     //testing
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.springframework.kafka:spring-kafka-test:1.1.0.M2'
 }
-
 
 // === IDEA configuration ===
 
