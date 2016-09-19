@@ -1,18 +1,18 @@
-# producer-rest-proxy
+# kafka-rest-proxy
 Get your data via REST into Apache Kafka
 
 ## Idea
 
-Often in your environment you might not be allowed to directly access your producer from web (e.g. you have a web- and application-zone, but producer is installed in application zone and not accessible via direct-path). But still you have the need to get data coming from outside into your topics. So one easy way is: producer-rest-proxy. It provides a simple RESTful API, forwarding your payload to producer.
+Often in your environment you might not be allowed to directly access your kafka from web (e.g. you have a web- and application-zone, but kafa is installed in application zone and not accessible via direct-path). But still you have the need to get data coming from outside into your topics. So one easy way is: kafka-rest-proxy. It provides a simple RESTful API, forwarding your payload to kafka.
 
 ## Prerequiste
 
-1. Install [Apache Kafka](http://producer.apache.org) download and unarchive or `brew install producer`
-2. Start producer
+1. Install [Apache Kafka](http://kafka.apache.org) download and unarchive or `brew install kafka`
+2. Start kafka
 
 	```
 	bin/zookeeper-server-start.sh config/zookeeper.properties
-	bin/producer-server-start.sh config/server.properties
+	bin/kafka-server-start.sh config/server.properties
 	```
 	
 	or if installed via brew
