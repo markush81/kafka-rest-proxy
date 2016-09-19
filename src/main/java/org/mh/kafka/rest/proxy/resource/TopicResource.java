@@ -46,12 +46,12 @@ public class TopicResource {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @PostMapping(path = "/{topic}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity postMessage(@PathVariable(value = "topic") String topic, @RequestBody String value) throws InterruptedException, ExecutionException, TimeoutException {
+    public ResponseEntity postMessage(@PathVariable(value = "topic") String topic, @RequestParam(value = "key", required = false) String key, @RequestBody String value) throws InterruptedException, ExecutionException, TimeoutException {
         if (Strings.isNullOrEmpty(value) || "{}".equals(value)) {
             return ResponseEntity.badRequest().body("No payload specified.");
         }
-        LOGGER.debug("{}: {}", topic, value);
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, value);
+        LOGGER.debug("{}: {} - {}", topic, key, value);
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key, value);
         future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
             @Override
             public void onFailure(Throwable exception) {
