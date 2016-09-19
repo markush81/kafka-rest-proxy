@@ -61,7 +61,10 @@ Configuration file can be found in `src/main/resources` and is named `applicatio
 ### POST to any topic
 
 ```
-curl -XPOST -H "Content-Type:application/json" -d "{\"name\":\"Markus Helbig\", \"message\": \"producer-rest-proxy proof of concept is on github.\"}" http://localhost:8080/topics/test
+curl -XPOST -H "Content-Type:application/json" -d "{\"message\": \"kafka-rest-proxy is on github.\"}" http://localhost:8080/topics/test
+
+curl -XPOST -H "Content-Type:application/json" -d "{\"message\": \"kafka-rest-proxy is on github.\"}" http://localhost:8080/topics/test?key=key
+
 ```
 
 ## Healthcheck

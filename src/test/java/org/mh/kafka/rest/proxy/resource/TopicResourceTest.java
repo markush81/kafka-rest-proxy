@@ -59,49 +59,58 @@ public class TopicResourceTest {
     @Before
     public void setUp() {
         //noinspection unchecked
-        when(kafkaTemplate.send(any(), any())).thenReturn(mock(ListenableFuture.class));
+        when(kafkaTemplate.send(any(), any(), any())).thenReturn(mock(ListenableFuture.class));
     }
 
     @Test
     public void testPostEmptyBody() throws Exception {
         mvc.perform(post("/topics/test").contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isBadRequest());
-        verify(kafkaTemplate, times(0)).send(any(), any());
+        verify(kafkaTemplate, times(0)).send(any(), eq(null), any());
     }
 
     @Test
     public void testPostNoMediaType() throws Exception {
         mvc.perform(post("/topics"))
                 .andExpect(status().isNotFound());
-        verify(kafkaTemplate, times(0)).send(any(), any());
+        verify(kafkaTemplate, times(0)).send(any(), eq(null), any());
     }
 
     @Test
     public void testPostEmptyTopic() throws Exception {
         mvc.perform(post("/topics").contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isNotFound());
-        verify(kafkaTemplate, times(0)).send(any(), any());
+        verify(kafkaTemplate, times(0)).send(any(), eq(null), any());
     }
 
     @Test
     public void testPostEmptyJson() throws Exception {
         mvc.perform(post("/topics/test").contentType(MediaType.APPLICATION_JSON_UTF8).content("{}"))
                 .andExpect(status().isBadRequest());
-        verify(kafkaTemplate, times(0)).send(any(), any());
+        verify(kafkaTemplate, times(0)).send(any(), eq(null), any());
     }
 
     @Test
     public void testPostEmptyJsonNoMediaTypeSet() throws Exception {
         mvc.perform(post("/topics/test").content("{}"))
                 .andExpect(status().isUnsupportedMediaType());
-        verify(kafkaTemplate, times(0)).send(any(), any());
+        verify(kafkaTemplate, times(0)).send(any(), eq(null), any());
     }
 
     @Test
     public void testPost() throws Exception {
-        mvc.perform(post("/topics/test").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}"))
+        mvc.perform(post("/topics/test").contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"message\": \"kafka-rest-proxy is out\"}"))
                 .andExpect(status().isCreated());
-        verify(kafkaTemplate, times(1)).send(eq("test"), eq("{\"name\":\"Markus Helbig\", \"message\": \"kafka-rest-proxy first proof of concept is out\"}"));
+        verify(kafkaTemplate, times(1)).send(eq("test"), eq(null), eq("{\"message\": \"kafka-rest-proxy is out\"}"));
+    }
+
+    @Test
+    public void testPostWithKey() throws Exception {
+        mvc.perform(post("/topics/test")
+                .param("key", "key")
+                .contentType(MediaType.APPLICATION_JSON_UTF8).content("{\"message\": \"kafka-rest-proxy is out\"}"))
+                .andExpect(status().isCreated());
+        verify(kafkaTemplate, times(1)).send(eq("test"), eq("key"), eq("{\"message\": \"kafka-rest-proxy is out\"}"));
     }
 
     @Test
