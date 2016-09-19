@@ -22,7 +22,7 @@ Often in your environment you might not be allowed to directly access your produ
 	kafka-server-start /usr/local/etc/kafka/server.properties
 	```
 	
-3. Create a producer topic
+3. Create a kafka topic
 
    Homebrew:
    ```
@@ -43,13 +43,13 @@ Often in your environment you might not be allowed to directly access your produ
    kafka-console-consumer --topic test --zookeeper localhost:2181
    ```
 
-## Usage of producer-rest-proxy
+## Usage of kafka-rest-proxy
 
 1. Clone git repository
 2. Build executable `./gradlew clean build`
 3. Start `./gradlew bootRun`
 
-## Configure producer-rest-proxy
+## Configure kafka-rest-proxy
 
 Configuration file can be found in `src/main/resources` and is named `application.yml`.
 
