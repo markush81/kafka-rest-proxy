@@ -53,7 +53,7 @@ Often in your environment you might not be allowed to directly access your kafka
 
 Configuration file can be found in `src/main/resources` and is named `application.yml`.
 
-- Put all Apache Kafka properties beneath node `producer` (see [Configuration](http://producer.apache.org/documentation.html#configuration))
+- Put all Apache Kafka properties beneath node `producer` (see [Configuration](http://kafka.apache.org/documentation.html#configuration))
 - For configuration of [Spring Boot](http://docs.spring.io/spring-boot/docs/current/reference/html/) see [Configuration](http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html)
 
 ## REST API
