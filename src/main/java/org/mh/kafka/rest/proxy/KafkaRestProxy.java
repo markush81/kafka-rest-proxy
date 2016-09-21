@@ -25,9 +25,6 @@ import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfigura
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Created by markus on 26/08/16.
- */
 @SpringBootApplication
 @EnableConfigurationProperties
 public class KafkaRestProxy {

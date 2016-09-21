@@ -43,9 +43,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Created by markus on 27/08/16.
- */
 @RunWith(SpringRunner.class)
 @WebMvcTest
 public class TopicResourceTest {

@@ -26,12 +26,11 @@
         </encoder>
     </appender>
 
-    <logger name="org.mh.kafka.rest.proxy" level="DEBUG" additivity="false">
+    <logger name="org.mh.kafka.rest.proxy" level="ERROR" additivity="false">
         <appender-ref ref="FILE"/>
     </logger>
 
     <root level="INFO">
-        <appender-ref ref="FILE"/>
         <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>

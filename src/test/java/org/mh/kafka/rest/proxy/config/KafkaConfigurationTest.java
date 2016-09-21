@@ -26,9 +26,6 @@ import java.util.Map;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by markus on 17/09/16.
- */
 public class KafkaConfigurationTest {
 
     private KafkaConfiguration sut;
