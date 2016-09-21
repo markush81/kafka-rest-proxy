@@ -26,9 +26,6 @@ import org.springframework.kafka.core.ProducerFactory;
 
 import java.util.Map;
 
-/**
- * Created by markus on 27/08/16.
- */
 @Configuration
 public class KafkaProxyProducer {
 

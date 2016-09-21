@@ -51,9 +51,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.springframework.kafka.test.hamcrest.KafkaMatchers.hasKey;
 import static org.springframework.kafka.test.hamcrest.KafkaMatchers.hasValue;
 
-/**
- * Created by markus on 27/08/16.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TopicResourceIntegrationTest {

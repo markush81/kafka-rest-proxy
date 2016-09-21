@@ -16,15 +16,20 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE'
+        classpath 'gradle.plugin.com.github.lkishalmi.gradle:gradle-gatling-plugin:0.4.1'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
+apply plugin: "com.github.lkishalmi.gatling"
 
 // === Repository config ===
 
@@ -90,6 +95,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+// === Gatling ===
+
+gatling {
+
+}
+build.dependsOn gatlingClasses
+
 // === Catch all artifacts ===
 
 artifacts {
@@ -100,6 +112,10 @@ artifacts {
 // === Dependencies ===
 
 dependencies {
+    // Scala
+    compile 'org.scala-lang:scala-library:2.11.8'
+
+    //application
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'org.springframework.kafka:spring-kafka:1.1.0.M2'
@@ -116,10 +132,11 @@ idea {
     module {
         scopes.TEST.plus += [configurations.integrationTestCompile, configurations.integrationTestRuntime]
     }
+    targetVersion = '16'
 }
 
 // === Wrapper generation ===
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.0'
+    gradleVersion = '3.1'
 }

@@ -33,9 +33,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Created by markus on 27/08/16.
- */
 @RestController
 @RequestMapping(path = "/topics")
 public class TopicResource {

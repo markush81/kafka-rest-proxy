@@ -22,9 +22,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 
-/**
- * Created by markus on 27/08/16.
- */
 @Configuration
 @ConfigurationProperties(prefix = "kafka")
 public class KafkaConfiguration {
