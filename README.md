@@ -67,7 +67,18 @@ curl -XPOST -H "Content-Type:application/json" -d "{\"message\": \"kafka-rest-pr
 
 ```
 
-## Healthcheck
+### Information endpoints
+
+```
+curl -XGET http://localhost:8080/topicslist
+
+curl -XGET http://localhost:8080/metrics
+
+curl -XGET http://localhost:8080/topicsinfo/test
+```
+
+
+### Healthcheck
 
 ```
 curl -XGET http://localhost:8080/health
@@ -75,4 +86,4 @@ curl -XGET http://localhost:8080/health
 
 -
 
-\* Note: spring-boot-1.4.0, spring-kafka-1.1.0.M2, java-1.8.0_102, Homebrew-0.9.9
+\* Note: spring-boot-1.4.1, spring-kafka-1.1.1, java-1.8.0_102, Homebrew-1.0.0

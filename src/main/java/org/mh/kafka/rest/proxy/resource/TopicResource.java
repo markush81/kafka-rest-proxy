@@ -16,7 +16,6 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
-import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +28,12 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 @RestController
-@RequestMapping(path = "/topics")
-public class TopicResource {
+@RequestMapping(path = "/topics", method = RequestMethod.POST)
+class TopicResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopicResource.class);
 
@@ -44,7 +42,7 @@ public class TopicResource {
 
     @PostMapping(path = "/{topic}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity postMessage(@PathVariable(value = "topic") String topic, @RequestParam(value = "key", required = false) String key, @RequestBody String value) throws InterruptedException, ExecutionException, TimeoutException {
-        if (Strings.isNullOrEmpty(value) || "{}".equals(value)) {
+        if (value == null) {
             return ResponseEntity.badRequest().body("No payload specified.");
         }
         LOGGER.debug("{}: {} - {}", topic, key, value);
@@ -61,16 +59,5 @@ public class TopicResource {
             }
         });
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    @GetMapping(path = {"/info", "/{topic}/info"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> get(@PathVariable(value = "topic") Optional<String> topic) throws InterruptedException, ExecutionException, TimeoutException {
-        if (topic.isPresent()) {
-            //FIXME: PartitionInfo is not serializable in some way ... ?!
-            return ResponseEntity.ok(kafkaTemplate.partitionsFor(topic.get()));
-        }
-//        return ResponseEntity.ok(Lists.newArrayList(kafkaProxyConsumer.getTopics()));
-        return ResponseEntity.ok(null);
     }
 }

@@ -122,5 +122,12 @@ public class TopicResourceIntegrationTest {
             producerConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestUtils.producerProps(embeddedKafka).get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
             return producerConfigs;
         }
+
+        @Bean
+        public Map<String, Object> consumerConfigs() {
+            Map<String, Object> consumerConfigs = kafkaConfiguration.getConsumerProperties();
+            consumerConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestUtils.producerProps(embeddedKafka).get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
+            return consumerConfigs;
+        }
     }
 }
