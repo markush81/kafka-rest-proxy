@@ -16,14 +16,10 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
-import com.google.common.collect.Lists;
-import org.apache.kafka.common.Node;
-import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,14 +29,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.List;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -51,10 +44,14 @@ public class TopicResourceTest {
     private MockMvc mvc;
 
     @MockBean
+    private Consumer<String, String> consumer;
+
+    @MockBean
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Before
     public void setUp() {
+        reset(kafkaTemplate, consumer);
         //noinspection unchecked
         when(kafkaTemplate.send(any(), any(), any())).thenReturn(mock(ListenableFuture.class));
     }
@@ -83,8 +80,8 @@ public class TopicResourceTest {
     @Test
     public void testPostEmptyJson() throws Exception {
         mvc.perform(post("/topics/test").contentType(MediaType.APPLICATION_JSON_UTF8).content("{}"))
-                .andExpect(status().isBadRequest());
-        verify(kafkaTemplate, times(0)).send(any(), eq(null), any());
+                .andExpect(status().isCreated());
+        verify(kafkaTemplate, times(1)).send(any(), eq(null), any());
     }
 
     @Test
@@ -115,32 +112,4 @@ public class TopicResourceTest {
         mvc.perform(get("/topics"))
                 .andExpect(status().isNotFound());
     }
-
-    @Test
-    public void testGetTopicInfo() throws Exception {
-        when(kafkaTemplate.partitionsFor("test")).thenAnswer(new Answer<List<PartitionInfo>>() {
-            @Override
-            public List<PartitionInfo> answer(InvocationOnMock invocation) throws Throwable {
-                return Lists.newArrayList(new PartitionInfo("test", 1, new Node(1, "localhost", 1), new Node[]{}, new Node[]{}));
-            }
-        });
-        mvc.perform(get("/topics/test/info"))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[{}]"));
-    }
-
-
-    @Test
-    public void testGetTopicFullInfo() throws Exception {
-        when(kafkaTemplate.partitionsFor("test")).thenAnswer(new Answer<List<PartitionInfo>>() {
-            @Override
-            public List<PartitionInfo> answer(InvocationOnMock invocation) throws Throwable {
-                return Lists.newArrayList(new PartitionInfo("test", 1, new Node(1, "localhost", 1), new Node[]{new Node(1, "localhost", 1)}, new Node[]{new Node(1, "localhost", 1)}));
-            }
-        });
-        mvc.perform(get("/topics/test/info"))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[{}]"));
-    }
-
 }

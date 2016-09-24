@@ -49,4 +49,18 @@ public class KafkaConfigurationTest {
         assertThat(flatConsumerProperties, hasEntry("property2.subproperty1", "subvalue2"));
     }
 
+    @Test
+    public void testFlatConsumerProperties() {
+        HashMap<String, Object> consumer = Maps.newHashMap();
+        consumer.put("property1", "value1");
+        HashMap<String, Object> subproperties = Maps.newHashMap();
+        subproperties.put("subproperty1", "subvalue2");
+        consumer.put("property2", subproperties);
+        sut.setConsumer(consumer);
+
+        Map<String, Object> flatConsumerProperties = sut.getConsumerProperties();
+        assertThat(flatConsumerProperties, hasEntry("property1", "value1"));
+        assertThat(flatConsumerProperties, hasEntry("property2.subproperty1", "subvalue2"));
+    }
+
 }

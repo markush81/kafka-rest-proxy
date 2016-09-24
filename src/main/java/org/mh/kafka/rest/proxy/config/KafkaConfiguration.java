@@ -17,6 +17,8 @@
 package org.mh.kafka.rest.proxy.config;
 
 import com.google.common.collect.Maps;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,6 +29,7 @@ import java.util.Map;
 public class KafkaConfiguration {
 
     private Map<String, Object> producer;
+    private Map<String, Object> consumer;
 
     @SuppressWarnings("unused")
     public Map<String, Object> getProducer() {
@@ -40,6 +43,25 @@ public class KafkaConfiguration {
 
     public Map<String, Object> getProducerProperties() {
         return flatProperties(producer, Maps.newHashMap(), null);
+    }
+
+    @SuppressWarnings("unused")
+    public Map<String, Object> getConsumer() {
+        return consumer;
+    }
+
+    @SuppressWarnings({"unused", "WeakerAccess"})
+    public void setConsumer(Map<String, Object> consumer) {
+        this.consumer = consumer;
+    }
+
+    public Map<String, Object> getConsumerProperties() {
+        Map<String, Object> consumerProperties = flatProperties(consumer, Maps.newHashMap(), null);
+        consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, "healthcheck");
+        consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
+        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        return consumerProperties;
     }
 
     private Map<String, Object> flatProperties(Map<String, Object> input, Map<String, Object> result, String current) {

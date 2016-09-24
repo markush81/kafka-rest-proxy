@@ -14,37 +14,40 @@
  *    limitations under the License.
  */
 
-package org.mh.kafka.rest.proxy.producer;
+package org.mh.kafka.rest.proxy.consumer;
 
+import org.apache.kafka.clients.consumer.Consumer;
 import org.mh.kafka.rest.proxy.config.KafkaConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import java.util.Map;
 
+/**
+ * Created by markus on 24/09/2016.
+ */
 @Configuration
-public class KafkaProxyProducer<K, V> {
+public class KafkaProxyConsumer {
 
     @Autowired
     private KafkaConfiguration configuration;
 
     @Bean
-    protected ProducerFactory<K, V> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    protected ConsumerFactory<String, String> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
     @Bean
-    protected Map<String, Object> producerConfigs() {
-        return configuration.getProducerProperties();
+    protected Map<String, Object> consumerConfigs() {
+        return configuration.getConsumerProperties();
     }
 
     @Bean
-    public KafkaTemplate<K, V> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    public Consumer<String, String> consumer() {
+        return consumerFactory().createConsumer();
     }
 
 }

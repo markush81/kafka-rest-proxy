@@ -21,7 +21,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE'
         classpath 'gradle.plugin.com.github.lkishalmi.gradle:gradle-gatling-plugin:0.4.1'
     }
 }
@@ -35,9 +35,6 @@ apply plugin: "com.github.lkishalmi.gatling"
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://repo.spring.io/libs-milestone'
-    }
 }
 
 // === JAVA configuration ===
@@ -68,6 +65,9 @@ task integrationTest(type: Test) {
     testClassesDir = sourceSets.integrationTest.output.classesDir
     classpath = sourceSets.integrationTest.runtimeClasspath
     it.mustRunAfter test
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+    }
 }
 check.dependsOn integrationTest
 
@@ -118,12 +118,12 @@ dependencies {
     //application
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-actuator'
-    compile 'org.springframework.kafka:spring-kafka:1.1.0.M2'
+    compile 'org.springframework.kafka:spring-kafka:1.1.1.RELEASE'
     compile 'com.google.guava:guava:19.0'
 
     //testing
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-    testCompile 'org.springframework.kafka:spring-kafka-test:1.1.0.M2'
+    testCompile 'org.springframework.kafka:spring-kafka-test:1.1.1.RELEASE'
 }
 
 // === IDEA configuration ===
