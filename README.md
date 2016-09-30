@@ -70,7 +70,7 @@ curl -XPOST -H "Content-Type:application/json" -d "{\"message\": \"kafka-rest-pr
 ### Information endpoints
 
 ```
-curl -XGET http://localhost:8080/topicslist
+curl -XGET http://localhost:8080/topicslist  //since consumer is not thread-safe topic-list gets up-to-date approx. every 2 sec in a scheduled task.
 
 curl -XGET http://localhost:8080/metrics
 

@@ -18,8 +18,6 @@ package org.mh.kafka.rest.proxy.resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.PartitionInfo;
@@ -46,7 +44,7 @@ class TopicInfoResource {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    private Consumer<String, String> consumer;
+    private TopicListInfo topicListInfo;
 
     @GetMapping(path = {"/topicsinfo/{topic}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<String>> getInfo(@PathVariable(value = "topic") String topic) throws InterruptedException, ExecutionException, TimeoutException, JsonProcessingException {
@@ -57,7 +55,7 @@ class TopicInfoResource {
 
     @GetMapping(path = {"/topicslist"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<String>> getList() throws InterruptedException, ExecutionException, TimeoutException {
-        return ResponseEntity.ok(Lists.newArrayList(consumer.listTopics().keySet()));
+        return ResponseEntity.ok(topicListInfo.getTopcis());
     }
 
     @GetMapping(path = {"/metrics"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

@@ -18,7 +18,6 @@ package org.mh.kafka.rest.proxy.resource;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.PartitionInfo;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
