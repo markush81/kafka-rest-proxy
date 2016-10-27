@@ -31,6 +31,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,27 +55,21 @@ public class TopicInfoResourceTest {
 
     @MockBean
     private KafkaTemplate<String, String> kafkaTemplate;
-
     @MockBean
     private Consumer<String, String> consumer;
+    @MockBean
+    private TopicListInfo topicListInfo;
 
     @Before
     public void setUp() {
-        reset(kafkaTemplate, consumer);
+        reset(kafkaTemplate, consumer, topicListInfo);
         //noinspection unchecked
         when(kafkaTemplate.send(any(), any(), any())).thenReturn(mock(ListenableFuture.class));
     }
 
     @Test
     public void testListTopics() throws Exception {
-        when(consumer.listTopics()).thenAnswer(new Answer<Map<String, List<PartitionInfo>>>() {
-            @Override
-            public Map<String, List<PartitionInfo>> answer(InvocationOnMock invocation) throws Throwable {
-                Map<String, List<PartitionInfo>> topics = Maps.newHashMap();
-                topics.put("test", Lists.newArrayList());
-                return topics;
-            }
-        });
+        when(topicListInfo.getTopcis()).thenReturn(Lists.newArrayList("test"));
         mvc.perform(get("/topicslist"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[\"test\"]"));

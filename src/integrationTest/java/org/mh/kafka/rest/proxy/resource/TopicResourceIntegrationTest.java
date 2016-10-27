@@ -56,7 +56,7 @@ import static org.springframework.kafka.test.hamcrest.KafkaMatchers.hasValue;
 public class TopicResourceIntegrationTest {
 
     @ClassRule
-    public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, "test");
+    public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(2, true, "test");
 
     private static final String MESSAGE = String.format("{\"message\": \"kafka-rest-proxy is out (%s).\"}", System.currentTimeMillis());
 

@@ -36,12 +36,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest
+@RunWith(SpringRunner.class)
 public class TopicResourceTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @MockBean
+    private TopicListInfo topicListInfo;
 
     @MockBean
     private Consumer<String, String> consumer;
@@ -51,7 +54,7 @@ public class TopicResourceTest {
 
     @Before
     public void setUp() {
-        reset(kafkaTemplate, consumer);
+        reset(kafkaTemplate, consumer, topicListInfo);
         //noinspection unchecked
         when(kafkaTemplate.send(any(), any(), any())).thenReturn(mock(ListenableFuture.class));
     }

@@ -24,9 +24,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClas
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.annotation.EnableKafka;
 
-@SpringBootApplication
+//@EnableKafka
 @EnableConfigurationProperties
+@SpringBootApplication
 public class KafkaRestProxy {
 
     @Bean

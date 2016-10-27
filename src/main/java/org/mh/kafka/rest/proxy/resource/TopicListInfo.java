@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_SINGLETON;
 
@@ -46,9 +47,12 @@ class TopicListInfo {
     }
 
     @Scheduled(fixedDelay = 2000)
-    private void updateTopicList() {
-        topcis.clear();
-        topcis.addAll(consumer.listTopics().keySet());
+    void updateTopicList() {
+        Set<String> topics = consumer.listTopics().keySet();
+        if (!topics.isEmpty()) {
+            topcis.clear();
+            topcis.addAll(topics);
+        }
     }
 
     List<String> getTopcis() {

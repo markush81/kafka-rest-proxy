@@ -18,10 +18,12 @@ package org.mh.kafka.rest.proxy.config;
 
 import com.google.common.collect.Maps;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -30,6 +32,7 @@ public class KafkaConfiguration {
 
     private Map<String, Object> producer;
     private Map<String, Object> consumer;
+    private List<String> brokers;
 
     @SuppressWarnings("unused")
     public Map<String, Object> getProducer() {
@@ -42,7 +45,9 @@ public class KafkaConfiguration {
     }
 
     public Map<String, Object> getProducerProperties() {
-        return flatProperties(producer, Maps.newHashMap(), null);
+        Map<String, Object> producerProperties = flatProperties(producer, Maps.newHashMap(), null);
+        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        return producerProperties;
     }
 
     @SuppressWarnings("unused")
@@ -55,9 +60,18 @@ public class KafkaConfiguration {
         this.consumer = consumer;
     }
 
+    public List<String> getBrokers() {
+        return brokers;
+    }
+
+    public void setBrokers(List<String> brokers) {
+        this.brokers = brokers;
+    }
+
     public Map<String, Object> getConsumerProperties() {
         Map<String, Object> consumerProperties = flatProperties(consumer, Maps.newHashMap(), null);
         consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, "healthcheck");
+        consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
         consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -67,8 +81,13 @@ public class KafkaConfiguration {
     private Map<String, Object> flatProperties(Map<String, Object> input, Map<String, Object> result, String current) {
         for (Map.Entry<String, Object> entry : input.entrySet()) {
             if (entry.getValue() instanceof Map) {
-                //noinspection unchecked
-                flatProperties((Map<String, Object>) entry.getValue(), result, entry.getKey());
+                if (current == null) {
+                    //noinspection unchecked
+                    flatProperties((Map<String, Object>) entry.getValue(), result, entry.getKey());
+                } else {
+                    //noinspection unchecked
+                    flatProperties((Map<String, Object>) entry.getValue(), result, current + "." + entry.getKey());
+                }
             } else if (current == null) {
                 result.put(entry.getKey(), entry.getValue());
             } else {
