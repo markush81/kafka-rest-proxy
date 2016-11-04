@@ -18,54 +18,29 @@ package org.mh.kafka.rest.proxy.resource;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.PartitionInfo;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mh.kafka.rest.proxy.AbstractMvcTest;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
-public class TopicInfoResourceTest {
-
-    @Autowired
-    private MockMvc mvc;
-
-    @MockBean
-    private KafkaTemplate<String, String> kafkaTemplate;
-    @MockBean
-    private Consumer<String, String> consumer;
-    @MockBean
-    private TopicListInfo topicListInfo;
-
-    @Before
-    public void setUp() {
-        reset(kafkaTemplate, consumer, topicListInfo);
-        //noinspection unchecked
-        when(kafkaTemplate.send(any(), any(), any())).thenReturn(mock(ListenableFuture.class));
-    }
+public class TopicInfoResourceTest extends AbstractMvcTest {
 
     @Test
     public void testListTopics() throws Exception {
