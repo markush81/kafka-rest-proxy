@@ -35,7 +35,7 @@ import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_SING
 @Component
 @EnableScheduling
 @Scope(value = SCOPE_SINGLETON)
-class TopicListInfo {
+public class TopicListInfo {
 
     @Autowired
     private Consumer<String, String> consumer;

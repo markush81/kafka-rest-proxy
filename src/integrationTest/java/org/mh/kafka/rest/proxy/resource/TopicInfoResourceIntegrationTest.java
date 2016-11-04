@@ -21,6 +21,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mh.kafka.rest.proxy.AbstractKafkaIntegrationTest;
 import org.mh.kafka.rest.proxy.config.KafkaConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,13 +43,7 @@ import static org.springframework.http.HttpMethod.GET;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TopicInfoResourceIntegrationTest {
-
-    @ClassRule
-    public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, "test");
-
-    @Autowired
-    private KafkaConfiguration kafkaConfiguration;
+public class TopicInfoResourceIntegrationTest extends AbstractKafkaIntegrationTest {
 
     @Autowired
     private TestRestTemplate client;
@@ -76,24 +71,5 @@ public class TopicInfoResourceIntegrationTest {
         assertThat(metricsBody.getBody().size(), greaterThan(1));
     }
 
-    @TestConfiguration
-    public static class TestKafkaConfiguration {
 
-        @Autowired
-        private KafkaConfiguration kafkaConfiguration;
-
-        @Bean
-        public Map<String, Object> producerConfigs() {
-            Map<String, Object> producerConfigs = kafkaConfiguration.getProducerProperties();
-            producerConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestUtils.producerProps(embeddedKafka).get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
-            return producerConfigs;
-        }
-
-        @Bean
-        public Map<String, Object> consumerConfigs() {
-            Map<String, Object> consumerConfigs = kafkaConfiguration.getConsumerProperties();
-            consumerConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestUtils.producerProps(embeddedKafka).get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
-            return consumerConfigs;
-        }
-    }
 }

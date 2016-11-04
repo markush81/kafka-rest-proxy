@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mh.kafka.rest.proxy.AbstractKafkaIntegrationTest;
 import org.mh.kafka.rest.proxy.config.KafkaConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,41 +54,12 @@ import static org.springframework.kafka.test.hamcrest.KafkaMatchers.hasValue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TopicResourceIntegrationTest {
-
-    @ClassRule
-    public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(2, true, "test");
+public class TopicResourceIntegrationTest extends AbstractKafkaIntegrationTest {
 
     private static final String MESSAGE = String.format("{\"message\": \"kafka-rest-proxy is out (%s).\"}", System.currentTimeMillis());
 
     @Autowired
-    private KafkaConfiguration kafkaConfiguration;
-
-    @Autowired
     private TestRestTemplate client;
-
-    private BlockingQueue<ConsumerRecord<String, String>> records;
-    private KafkaMessageListenerContainer<String, String> container;
-
-    @Before
-    public void setUp() throws Exception {
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("test-group", "true", embeddedKafka);
-        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
-        container = new KafkaMessageListenerContainer<>(cf, new ContainerProperties("test"));
-        records = new LinkedBlockingQueue<>();
-        container.setupMessageListener((MessageListener<String, String>) record -> {
-            records.add(record);
-        });
-        container.start();
-        ContainerTestUtils.waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
-    }
-
-    @After
-    public void tearDown() {
-        container.stop();
-    }
 
     @Test
     public void testPostJson() throws InterruptedException {
@@ -108,26 +80,5 @@ public class TopicResourceIntegrationTest {
         ConsumerRecord<String, String> result = records.poll(10, TimeUnit.SECONDS);
         assertThat(result, hasValue(MESSAGE));
         assertThat(result, hasKey("theKey"));
-    }
-
-    @TestConfiguration
-    public static class TestKafkaConfiguration {
-
-        @Autowired
-        private KafkaConfiguration kafkaConfiguration;
-
-        @Bean
-        public Map<String, Object> producerConfigs() {
-            Map<String, Object> producerConfigs = kafkaConfiguration.getProducerProperties();
-            producerConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestUtils.producerProps(embeddedKafka).get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
-            return producerConfigs;
-        }
-
-        @Bean
-        public Map<String, Object> consumerConfigs() {
-            Map<String, Object> consumerConfigs = kafkaConfiguration.getConsumerProperties();
-            consumerConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestUtils.producerProps(embeddedKafka).get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
-            return consumerConfigs;
-        }
     }
 }

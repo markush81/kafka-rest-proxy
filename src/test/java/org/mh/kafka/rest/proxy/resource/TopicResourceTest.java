@@ -16,48 +16,24 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
-import org.apache.kafka.clients.consumer.Consumer;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mh.kafka.rest.proxy.AbstractMvcTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
 @RunWith(SpringRunner.class)
-public class TopicResourceTest {
-
-    @Autowired
-    private MockMvc mvc;
-
-    @MockBean
-    private TopicListInfo topicListInfo;
-
-    @MockBean
-    private Consumer<String, String> consumer;
-
-    @MockBean
-    private KafkaTemplate<String, String> kafkaTemplate;
-
-    @Before
-    public void setUp() {
-        reset(kafkaTemplate, consumer, topicListInfo);
-        //noinspection unchecked
-        when(kafkaTemplate.send(any(), any(), any())).thenReturn(mock(ListenableFuture.class));
-    }
+public class TopicResourceTest extends AbstractMvcTest {
 
     @Test
     public void testPostEmptyBody() throws Exception {
