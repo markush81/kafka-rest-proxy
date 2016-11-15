@@ -30,13 +30,13 @@ import java.util.Map;
  * Created by markus on 24/09/2016.
  */
 @Configuration
-public class KafkaProxyConsumer {
+public class KafkaProxyConsumer<K, V> {
 
     @Autowired
     private KafkaConfiguration configuration;
 
     @Bean
-    protected ConsumerFactory<String, String> consumerFactory() {
+    protected ConsumerFactory<K, V> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
@@ -46,7 +46,7 @@ public class KafkaProxyConsumer {
     }
 
     @Bean
-    public Consumer<String, String> consumer() {
+    public Consumer<K, V> consumer() {
         return consumerFactory().createConsumer();
     }
 

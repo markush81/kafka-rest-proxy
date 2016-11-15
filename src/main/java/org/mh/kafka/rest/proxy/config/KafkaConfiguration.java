@@ -19,7 +19,6 @@ package org.mh.kafka.rest.proxy.config;
 import com.google.common.collect.Maps;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,6 +31,7 @@ public class KafkaConfiguration {
 
     private Map<String, Object> producer;
     private Map<String, Object> consumer;
+    private Map<String, Object> ssl;
     private List<String> brokers;
 
     @SuppressWarnings("unused")
@@ -45,9 +45,9 @@ public class KafkaConfiguration {
     }
 
     public Map<String, Object> getProducerProperties() {
-        Map<String, Object> producerProperties = flatProperties(producer, Maps.newHashMap(), null);
-        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
-        return producerProperties;
+        Map<String, Object> commonProperties = flatProperties(this.ssl, Maps.newHashMap(), "ssl");
+        commonProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        return flatProperties(producer, commonProperties, null);
     }
 
     @SuppressWarnings("unused")
@@ -60,6 +60,14 @@ public class KafkaConfiguration {
         this.consumer = consumer;
     }
 
+    public Map<String, Object> getSsl() {
+        return ssl;
+    }
+
+    public void setSsl(Map<String, Object> ssl) {
+        this.ssl = ssl;
+    }
+
     public List<String> getBrokers() {
         return brokers;
     }
@@ -69,16 +77,15 @@ public class KafkaConfiguration {
     }
 
     public Map<String, Object> getConsumerProperties() {
-        Map<String, Object> consumerProperties = flatProperties(consumer, Maps.newHashMap(), null);
-        consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, "healthcheck");
-        consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
-        consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
-        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return consumerProperties;
+        Map<String, Object> commonProperties = flatProperties(this.ssl, Maps.newHashMap(), "ssl");
+        commonProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        return flatProperties(consumer, commonProperties, null);
     }
 
     private Map<String, Object> flatProperties(Map<String, Object> input, Map<String, Object> result, String current) {
+        if (input == null || input.isEmpty()) {
+            return result;
+        }
         for (Map.Entry<String, Object> entry : input.entrySet()) {
             if (entry.getValue() instanceof Map) {
                 if (current == null) {

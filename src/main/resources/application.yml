@@ -1,12 +1,20 @@
 kafka:
+  brokers: localhost:9092
+  #there has to be at least one property, otherwise comment out
   producer:
-    bootstrap.servers: localhost:9092
     acks: all
     key.serializer: org.apache.kafka.common.serialization.StringSerializer
     value.serializer: org.apache.kafka.common.serialization.StringSerializer
 
+  #there has to be at least one property, otherwise comment out
   consumer:
-    bootstrap.servers: localhost:9092
+    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    enable.auto.commit: true
+    group.id: healthcheck
+
+  #there has to be at least one property, otherwise comment out
+  #ssl:
 
 spring.jackson.serialization.fail_on_empty_beans: false
 
