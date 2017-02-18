@@ -23,8 +23,8 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.mh.kafka.rest.proxy.config.KafkaConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -80,18 +80,18 @@ public class AbstractKafkaIntegrationTest {
     public static class TestKafkaConfiguration {
 
         @Autowired
-        private KafkaConfiguration kafkaConfiguration;
+        private KafkaProperties kafkaProperties;
 
         @Bean
         public Map<String, Object> producerConfigs() {
-            Map<String, Object> producerConfigs = kafkaConfiguration.getProducerProperties();
+            Map<String, Object> producerConfigs = kafkaProperties.buildProducerProperties();
             producerConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestUtils.producerProps(embeddedKafka).get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
             return producerConfigs;
         }
 
         @Bean
         public Map<String, Object> consumerConfigs() {
-            Map<String, Object> consumerConfigs = kafkaConfiguration.getConsumerProperties();
+            Map<String, Object> consumerConfigs = kafkaProperties.buildConsumerProperties();
             consumerConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaTestUtils.producerProps(embeddedKafka).get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
             return consumerConfigs;
         }

@@ -16,8 +16,8 @@
 
 package org.mh.kafka.rest.proxy.producer;
 
-import org.mh.kafka.rest.proxy.config.KafkaConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -30,7 +30,7 @@ import java.util.Map;
 public class KafkaProxyProducer<K, V> {
 
     @Autowired
-    private KafkaConfiguration configuration;
+    private KafkaProperties kafkaProperties;
 
     @Bean
     protected ProducerFactory<K, V> producerFactory() {
@@ -39,7 +39,7 @@ public class KafkaProxyProducer<K, V> {
 
     @Bean
     protected Map<String, Object> producerConfigs() {
-        return configuration.getProducerProperties();
+        return kafkaProperties.buildProducerProperties();
     }
 
     @Bean

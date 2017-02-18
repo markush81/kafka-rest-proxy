@@ -17,8 +17,8 @@
 package org.mh.kafka.rest.proxy.consumer;
 
 import org.apache.kafka.clients.consumer.Consumer;
-import org.mh.kafka.rest.proxy.config.KafkaConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class KafkaProxyConsumer<K, V> {
 
     @Autowired
-    private KafkaConfiguration configuration;
+    private KafkaProperties kafkaProperties;
 
     @Bean
     protected ConsumerFactory<K, V> consumerFactory() {
@@ -42,7 +42,7 @@ public class KafkaProxyConsumer<K, V> {
 
     @Bean
     protected Map<String, Object> consumerConfigs() {
-        return configuration.getConsumerProperties();
+        return kafkaProperties.buildConsumerProperties();
     }
 
     @Bean

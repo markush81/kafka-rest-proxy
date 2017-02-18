@@ -18,7 +18,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE'
     }
 }
 
@@ -126,15 +126,17 @@ dependencies {
     //application
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-actuator'
-    compile 'org.springframework.kafka:spring-kafka:1.1.1.RELEASE'
-    compile 'com.google.guava:guava:19.0'
+    compile 'org.springframework.kafka:spring-kafka:1.1.3.RELEASE'
+    compile 'com.google.guava:guava:21.0'
     //devtools
     compile 'org.springframework.boot:spring-boot-devtools'
 
 
     //testing
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-    testCompile 'org.springframework.kafka:spring-kafka-test:1.1.1.RELEASE'
+    testCompile ('org.springframework.kafka:spring-kafka-test:1.1.3.RELEASE') {
+        exclude module: 'log4j'
+    }
 }
 
 bootRepackage {
@@ -152,16 +154,11 @@ idea {
         scopes.TEST.plus += [configurations.integrationTestCompile, configurations.integrationTestRuntime]
     }
     targetVersion = '16'
-    //IDEA fix
-    ScalaCompileOptions.metaClass.daemonServer = true
-    ScalaCompileOptions.metaClass.fork = true
-    ScalaCompileOptions.metaClass.useAnt = false
-    ScalaCompileOptions.metaClass.useCompileDaemon = false
 }
 
 // === Wrapper generation ===
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.2.1'
-    distributionUrl = 'https://services.gradle.org/distributions/gradle-3.2.1-all.zip'
+    gradleVersion = '3.3'
+    distributionUrl = 'https://services.gradle.org/distributions/gradle-3.3-all.zip'
 }

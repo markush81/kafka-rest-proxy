@@ -1,22 +1,19 @@
-kafka:
-  brokers: localhost:9092
-  #there has to be at least one property, otherwise comment out
-  producer:
-    acks: all
-    key.serializer: org.apache.kafka.common.serialization.StringSerializer
-    value.serializer: org.apache.kafka.common.serialization.StringSerializer
+spring:
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-  #there has to be at least one property, otherwise comment out
-  consumer:
-    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    enable.auto.commit: true
-    group.id: healthcheck
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: true
+      group-id: healthcheck
 
-  #there has to be at least one property, otherwise comment out
-  #ssl:
-
-spring.jackson.serialization.fail_on_empty_beans: false
+  jackson.serialization.fail_on_empty_beans: false
 
 server:
   session.timeout: 60
