@@ -18,7 +18,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE'
     }
 }
 
@@ -35,6 +35,7 @@ sonarqube {
 }
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.lkishalmi.gatling'
