@@ -1,8 +1,7 @@
 # kafka-rest-proxy
 Get your data via REST into Apache Kafka
 
-[![Build Status](https://travis-ci.org/markush81/kafka-rest-proxy.svg?branch=master)](https://travis-ci.org/markush81/kafka-rest-proxy) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c25a69ad94b844e0ad8c3e01c6f20760)](https://www.codacy.com/app/mhelbig81/kafka-rest-proxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=markush81/kafka-rest-proxy&amp;utm_campaign=Badge_Grade)
-
+[![Build Status](https://travis-ci.com/markush81/kafka-rest-proxy.svg?branch=master)](https://travis-ci.org/markush81/kafka-rest-proxy) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c25a69ad94b844e0ad8c3e01c6f20760)](https://www.codacy.com/app/markush81/kafka-rest-proxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=markush81/kafka-rest-proxy&amp;utm_campaign=Badge_Grade)
 
 ## Idea
 
