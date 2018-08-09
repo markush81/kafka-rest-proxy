@@ -23,19 +23,10 @@ buildscript {
 }
 
 plugins {
-    id 'org.sonarqube' version '2.2.1'
     id 'com.github.lkishalmi.gatling' version '0.4.1' apply false
 }
 
-sonarqube {
-    properties {
-        property "sonar.projectName", "Kafka REST Proxy"
-        property "sonar.projectKey", "markush81.org.mh.kafka.rest.proxy"
-    }
-}
-
 apply plugin: 'java'
-apply plugin: 'jacoco'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.lkishalmi.gatling'

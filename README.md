@@ -1,7 +1,7 @@
 # kafka-rest-proxy
 Get your data via REST into Apache Kafka
 
-[![Build Status](https://travis-ci.org/markush81/kafka-rest-proxy.svg?branch=master)](https://travis-ci.org/markush81/kafka-rest-proxy) [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=markush81.org.mh.kafka.rest.proxy&metric=alert_status)](https://sonarcloud.io/dashboard?id=markush81.org.mh.kafka.rest.proxy)
+[![Build Status](https://travis-ci.org/markush81/kafka-rest-proxy.svg?branch=master)](https://travis-ci.org/markush81/kafka-rest-proxy) 
 
 
 ## Idea
