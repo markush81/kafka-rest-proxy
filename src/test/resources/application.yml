@@ -1,7 +1,8 @@
 spring:
+  main.allow-bean-definition-overriding: true
   kafka:
     bootstrap-servers:
-      - localhost:9092
+    - localhost:9092
     producer:
       acks: all
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

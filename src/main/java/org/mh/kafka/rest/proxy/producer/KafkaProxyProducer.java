@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Markus Helbig
+ *  Copyright 2016, 2018 Markus Helbig
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,21 +29,25 @@ import java.util.Map;
 @Configuration
 public class KafkaProxyProducer<K, V> {
 
-    @Autowired
     private KafkaProperties kafkaProperties;
 
+    @Autowired
+    public KafkaProxyProducer(KafkaProperties kafkaProperties) {
+        this.kafkaProperties = kafkaProperties;
+    }
+
     @Bean
-    protected ProducerFactory<K, V> producerFactory() {
+    ProducerFactory<K, V> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    protected Map<String, Object> producerConfigs() {
+    Map<String, Object> producerConfigs() {
         return kafkaProperties.buildProducerProperties();
     }
 
     @Bean
-    public KafkaTemplate<K, V> kafkaTemplate() {
+    KafkaTemplate<K, V> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Markus Helbig
+ *  Copyright 2016, 2018 Markus Helbig
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.Node;
@@ -30,6 +28,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public class TopicInfoResourceTest extends AbstractMvcTest {
 
     @Test
     public void testListTopics() throws Exception {
-        when(topicListInfo.getTopcis()).thenReturn(Lists.newArrayList("test"));
+        when(topicListInfo.getTopcis()).thenReturn(List.of("test"));
         mvc.perform(get("/topicslist"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[\"test\"]"));
@@ -52,12 +51,7 @@ public class TopicInfoResourceTest extends AbstractMvcTest {
 
     @Test
     public void testGetTopicInfo() throws Exception {
-        when(kafkaTemplate.partitionsFor("test")).thenAnswer(new Answer<List<PartitionInfo>>() {
-            @Override
-            public List<PartitionInfo> answer(InvocationOnMock invocation) throws Throwable {
-                return Lists.newArrayList(new PartitionInfo("test", 1, new Node(1, "localhost", 1), new Node[]{}, new Node[]{}));
-            }
-        });
+        when(kafkaTemplate.partitionsFor("test")).thenAnswer((Answer<List<PartitionInfo>>) invocation -> List.of(new PartitionInfo("test", 1, new Node(1, "localhost", 1), new Node[]{}, new Node[]{})));
         mvc.perform(get("/topicsinfo/test"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[\"{topic: test, partition: 1, leader: {id: 1 }}\"]"));
@@ -68,8 +62,8 @@ public class TopicInfoResourceTest extends AbstractMvcTest {
         when(kafkaTemplate.metrics()).thenAnswer(new Answer<Map<MetricName, ? extends Metric>>() {
             @Override
             public Map<MetricName, ? extends Metric> answer(InvocationOnMock invocation) throws Throwable {
-                Map<MetricName, Metric> metrics = Maps.newHashMap();
-                MetricName metricName = new MetricName("name", "group", "description", Maps.newHashMap());
+                Map<MetricName, Metric> metrics = new HashMap<>();
+                MetricName metricName = new MetricName("name", "group", "description", new HashMap<>());
                 metrics.put(metricName, new Metric() {
                     @Override
                     public MetricName metricName() {
@@ -78,6 +72,11 @@ public class TopicInfoResourceTest extends AbstractMvcTest {
 
                     @Override
                     public double value() {
+                        return 0;
+                    }
+
+                    @Override
+                    public Object metricValue() {
                         return 0;
                     }
                 });

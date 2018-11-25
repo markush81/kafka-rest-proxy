@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Markus Helbig
+ *  Copyright 2016, 2018 Markus Helbig
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ public class AbstractMvcTest {
     @Before
     public void setUp() {
         reset(kafkaTemplate, consumer, topicListInfo);
-        //noinspection unchecked
         when(kafkaTemplate.send(any(), any(), any())).thenReturn(mock(ListenableFuture.class));
     }
 }

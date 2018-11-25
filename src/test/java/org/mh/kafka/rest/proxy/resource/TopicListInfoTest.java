@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Markus Helbig
+ *  Copyright 2016, 2018 Markus Helbig
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.junit.Before;
@@ -53,14 +51,7 @@ public class TopicListInfoTest {
 
     @Test
     public void testListTopics() throws Exception {
-        when(consumer.listTopics()).thenAnswer(new Answer<Map<String, List<PartitionInfo>>>() {
-            @Override
-            public Map<String, List<PartitionInfo>> answer(InvocationOnMock invocation) throws Throwable {
-                Map<String, List<PartitionInfo>> topics = Maps.newHashMap();
-                topics.put("test", Lists.newArrayList());
-                return topics;
-            }
-        });
+        when(consumer.listTopics()).thenAnswer((Answer<Map<String, List<PartitionInfo>>>) invocation -> Map.of("test", List.of()));
         topicListInfo.updateTopicList();
         assertThat(topicListInfo.getTopcis(), containsInAnyOrder("test"));
     }

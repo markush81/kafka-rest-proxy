@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Markus Helbig
+ *  Copyright 2016, 2018 Markus Helbig
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.mh.kafka.rest.proxy.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
@@ -29,8 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,19 +44,19 @@ class TopicInfoResource {
     private TopicListInfo topicListInfo;
 
     @GetMapping(path = {"/topicsinfo/{topic}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<String>> getInfo(@PathVariable(value = "topic") String topic) throws InterruptedException, ExecutionException, TimeoutException, JsonProcessingException {
+    public ResponseEntity<List<String>> getInfo(@PathVariable(value = "topic") String topic) {
         List<PartitionInfo> body = kafkaTemplate.partitionsFor(topic);
         List<String> formatted = body.stream().map(p -> String.format("{topic: %s, partition: %s, leader: {id: %s }}", p.topic(), p.partition(), p.leader().id())).collect(Collectors.toList());
         return ResponseEntity.ok(formatted);
     }
 
     @GetMapping(path = {"/topicslist"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<String>> getList() throws InterruptedException, ExecutionException, TimeoutException {
+    public ResponseEntity<List<String>> getList() {
         return ResponseEntity.ok(topicListInfo.getTopcis());
     }
 
     @GetMapping(path = {"/metrics"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Map<MetricName, ? extends Metric>> getMetrics() throws InterruptedException, ExecutionException, TimeoutException {
+    public ResponseEntity<Map<MetricName, ? extends Metric>> getMetrics() {
         return ResponseEntity.ok(kafkaTemplate.metrics());
     }
 }

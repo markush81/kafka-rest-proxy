@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Markus Helbig
+ *  Copyright 2016, 2018 Markus Helbig
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -18,60 +18,36 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE'
     }
 }
 
+
 plugins {
-    id 'com.github.lkishalmi.gatling' version '0.4.1' apply false
+    id 'java'
+    id 'idea'
+    id 'com.github.lkishalmi.gatling' version '3.0.1'
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'com.github.lkishalmi.gatling'
-
-// === Repository config ===
+apply plugin: 'io.spring.dependency-management'
 
 repositories {
     mavenCentral()
 }
 
-// === JAVA configuration ===
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
 
-//noinspection GroovyUnusedAssignment
-sourceCompatibility = JavaVersion.VERSION_1_8
-//noinspection GroovyUnusedAssignment
-targetCompatibility = JavaVersion.VERSION_1_8
 
-// === Integration Test Configuration ===
-
-sourceSets {
-    integrationTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-        }
-    }
-}
-
-configurations {
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
+test {
+    exclude '**/*IntegrationTest'
 }
 
 task integrationTest(type: Test) {
-    //noinspection GroovyAccessibility
-    testClassesDir = sourceSets.integrationTest.output.classesDir
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    it.mustRunAfter test
-    testLogging {
-        events "started", "passed", "skipped", "failed"
-    }
+    include '**/*IntegrationTest'
 }
-check.dependsOn integrationTest
-
-// === JAR ===
+test.finalizedBy integrationTest
 
 jar {
     manifest {
@@ -80,14 +56,14 @@ jar {
     }
 }
 
-// === Sources JAR ===
-
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
 
-// === JavaDoc JAR ===
+javadoc {
+    options.addBooleanOption('html5', true)
+}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
@@ -95,62 +71,38 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-// === Gatling ===
-
 gatling {
-
 }
 build.dependsOn gatlingClasses
 
-// === Catch all artifacts ===
 
 artifacts {
     archives sourcesJar
     archives javadocJar
 }
 
-// === Dependencies ===
 
 dependencies {
-    // Scala
-    compile 'org.scala-lang:scala-library:2.11.8'
+    compile 'org.scala-lang:scala-library:2.11.+'
 
-    //application
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-actuator'
-    compile 'org.springframework.kafka:spring-kafka:1.1.3.RELEASE'
-    compile 'com.google.guava:guava:21.0'
-    //devtools
-    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.springframework.kafka:spring-kafka'
 
-
-    //testing
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-    testCompile ('org.springframework.kafka:spring-kafka-test:1.1.3.RELEASE') {
+    testCompile('org.springframework.kafka:spring-kafka-test') {
         exclude module: 'log4j'
     }
 }
 
-bootRepackage {
-    excludeDevtools = true
-}
-
 gatling {
-    toolVersion = '2.2.3'
+    toolVersion = '3.0.0'
 }
-
-// === IDEA configuration ===
 
 idea {
-    module {
-        scopes.TEST.plus += [configurations.integrationTestCompile, configurations.integrationTestRuntime]
-    }
-    targetVersion = '16'
+    targetVersion = '18'
 }
 
-// === Wrapper generation ===
-
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.3'
-    distributionUrl = 'https://services.gradle.org/distributions/gradle-3.3-all.zip'
+    distributionType = Wrapper.DistributionType.ALL
 }

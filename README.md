@@ -83,9 +83,8 @@ curl -XGET http://localhost:8080/topicsinfo/test
 ### Healthcheck
 
 ```
-curl -XGET http://localhost:8080/health
+curl -XGET http://localhost:8080/actuator/health
 ```
 
--
 
-\* Note: spring-boot-1.4.1, spring-kafka-1.1.1, java-1.8.0_102, Homebrew-1.0.0
+\* Note: spring-boot-2.0.1, spring-kafka-2.2.0, java version 10.0.2 (2018-07-17)

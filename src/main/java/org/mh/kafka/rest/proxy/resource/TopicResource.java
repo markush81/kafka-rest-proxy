@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Markus Helbig
+ *  Copyright 2016, 2018 Markus Helbig
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,9 +28,6 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 @RestController
 @RequestMapping(path = "/topics", method = RequestMethod.POST)
 class TopicResource {
@@ -41,13 +38,13 @@ class TopicResource {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @PostMapping(path = "/{topic}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity postMessage(@PathVariable(value = "topic") String topic, @RequestParam(value = "key", required = false) String key, @RequestBody String value) throws InterruptedException, ExecutionException, TimeoutException {
+    public ResponseEntity postMessage(@PathVariable(value = "topic") String topic, @RequestParam(value = "key", required = false) String key, @RequestBody String value) {
         if (value == null) {
             return ResponseEntity.badRequest().body("No payload specified.");
         }
         LOGGER.debug("{}: {} - {}", topic, key, value);
         ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key, value);
-        future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+        future.addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onFailure(Throwable exception) {
                 LOGGER.error("{}", exception.getMessage(), exception);
