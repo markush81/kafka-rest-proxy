@@ -1,8 +1,7 @@
 # kafka-rest-proxy
 Get your data via REST into Apache Kafka
 
-[![Build Status](https://travis-ci.com/markush81/kafka-rest-proxy.svg?branch=master)](https://travis-ci.com/markush81/kafka-rest-proxy) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c25a69ad94b844e0ad8c3e01c6f20760)](https://www.codacy.com/app/markush81/kafka-rest-proxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=markush81/kafka-rest-proxy&amp;utm_campaign=Badge_Grade)
-
+[![Build Status](https://travis-ci.com/markush81/kafka-rest-proxy.svg?branch=master)](https://travis-ci.com/markush81/kafka-rest-proxy)
 ## Idea
 
 Often in your environment you might not be allowed to directly access your kafka from web (e.g. you have a web- and application-zone, but kafa is installed in application zone and not accessible via direct-path). But still you have the need to get data coming from outside into your topics. So one easy way is: kafka-rest-proxy. It provides a simple RESTful API, forwarding your payload to kafka.
